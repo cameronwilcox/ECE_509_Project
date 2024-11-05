@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 import sys
+import os
 
 def parse_cloudtrail_logs(file_path):
     events = []
@@ -49,10 +50,23 @@ def display_timeline(key_events):
     for event_time, description in key_events:
         print(f"{event_time.strftime('%Y-%m-%d %H:%M:%S')} - {description}")
 
+def write_out_timeline(key_events):
+    output_dir = '../output'
+    output_file = 'out.txt'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    with open(output_dir + output_file, 'w+') as file:
+        print("opened/created file")
+        file.write("Timeline of Key Events:\n")
+        file.write('=' * 50)
+        for event_time, description in key_events:
+            file.write(f"{event_time.strftime('%Y-%m-%d %H:%M:%S')} - {description}")
+
 def main(file_path):
     events = parse_cloudtrail_logs(file_path)
     key_events = extract_key_events(events)
     display_timeline(key_events)
+    write_out_timeline(key_events)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
