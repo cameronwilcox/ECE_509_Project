@@ -21,6 +21,7 @@ def extract_key_events(events):
         event_name = event['eventName']
         event_source = event['eventSource']
         user_identity = event['userIdentity'].get('userName', event['userIdentity'].get('type', 'Unknown'))
+        srcIP = event['sourceIPAddress']
 
         if 'errorCode' in event:
             error_code = event['errorCode']
@@ -30,9 +31,15 @@ def extract_key_events(events):
             description = f"Console login by {user_identity}"
         elif event_name == 'StopInstances':
             instances = ', '.join([item['instanceId'] for item in event['requestParameters']['instancesSet']['items']])
-            description = f"Stopped EC2 instances: {instances}"
+            forced = event['requestParameters']['force']
+            description = f"Stopped EC2 instances" + f' (forced: {forced}) ' + f" : {instances}"
         elif event_name == 'ExecuteStatement':
             description = "Database query executed"
+            region = event['awsRegion']
+
+            description = description + ' region: ' + region + ' sourceIP: ' + srcIP + '\n'
+            description = description + '\t requestParameters: \n \t\t' + 'resourceArn: ' + event['requestParameters']['resourceArn'] + \
+                ' | database: ' + event['requestParameters']['database'] + ' | sql: ' + event['requestParameters']['sql']
         elif event_name == 'AdminSetUserPassword':
             description = "User password reset"
         elif event_name == 'InitiateAuth':
