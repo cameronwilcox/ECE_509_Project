@@ -51,7 +51,7 @@ def display_timeline(key_events):
         print(f"{event_time.strftime('%Y-%m-%d %H:%M:%S')} - {description}")
 
 def write_out_timeline(key_events):
-    output_dir = '../output'
+    output_dir = '../output/'
     output_file = 'out.txt'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -72,6 +72,6 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python script.py <path_to_cloudtrail_logs>")
         sys.exit(1)
-    
+
     file_path = sys.argv[1]
     main(file_path)
