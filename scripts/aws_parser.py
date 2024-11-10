@@ -33,14 +33,14 @@ def extract_key_events(events):
         elif event_name == 'StopInstances':
             instances = ', '.join([item['instanceId'] for item in event['requestParameters']['instancesSet']['items']])
             forced = event['requestParameters']['force']
-            description = f"Stopped EC2 instances" + f' (forced: {forced}, region: {region}) ' + f" : {instances}"
+            description = f"Stopped EC2 instances by {src_ip}" + f' (forced: {forced}, region: {region}) ' + f" : {instances}"
         elif event_name == 'StartInstances':
             instances_set = ', '.join([item['instanceId'] for item in event['requestParameters']['instancesSet']['items']])
             response_instances = ', '.join([item['instanceId'] + ' = code,previous_state: ' + str(item['previousState']['code']) + "," + item['previousState']['name'] + ' | code,current_state: ' + str(item['currentState']['code']) + "," + item['currentState']['name'] + '\n' \
                 for item in event['responseElements']['instancesSet']['items']])
-            description = f'Started EC2 instances = instances_set: {instances_set} ---- response_instances: {response_instances}'
+            description = f'Started EC2 instances by {src_ip} = instances_set: {instances_set} ---- response_instances: {response_instances}'
         elif event_name == 'ExecuteStatement':
-            description = "Database query executed"
+            description = "Database query executed" + '\n'
             description = description + ' region: ' + region + ' sourceIP: ' + src_ip + '\n'
             description = description + '\t requestParameters: \n \t\t' + 'resourceArn: ' + event['requestParameters']['resourceArn'] + \
                 ' | database: ' + event['requestParameters']['database'] + ' | sql: ' + event['requestParameters']['sql']
