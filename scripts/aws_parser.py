@@ -24,11 +24,7 @@ def extract_key_events(events):
         src_ip = event['sourceIPAddress']
         region = event['awsRegion']
 
-        if 'errorCode' in event:
-            error_code = event['errorCode']
-            error_message = event.get('errorMessage', 'No specific error message provided')
-            description = f"Error: {error_code} - {error_message}"
-        elif event_name == 'ConsoleLogin':
+        if event_name == 'ConsoleLogin':
             description = f"Console login by {user_identity}"
         elif event_name == 'StopInstances':
             instances = ', '.join([item['instanceId'] for item in event['requestParameters']['instancesSet']['items']])
@@ -47,8 +43,14 @@ def extract_key_events(events):
         elif event_name == 'AdminSetUserPassword':
             description = "User password reset"
         elif event_name == 'InitiateAuth':
-            description = "Authentication attempt"
+            description = f"Authentication attempt by {src_ip}"
+            if 'errorCode' in event:
+                description = description + f"\n\tError due to: {event['errorCode']},{event['errorMessage']}"
         else:
+            if 'errorCode' in event:
+                error_code = event['errorCode']
+                error_message = event.get('errorMessage', 'No specific error message provided')
+                description = f"Error: {error_code} - {error_message}"
             description = f"{event_name} from {event_source}"
 
         key_events.append((event_time, description))
