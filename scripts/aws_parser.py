@@ -21,7 +21,8 @@ def extract_key_events(events):
         event_name = event['eventName']
         event_source = event['eventSource']
         user_identity = event['userIdentity'].get('userName', event['userIdentity'].get('type', 'Unknown'))
-        srcIP = event['sourceIPAddress']
+        src_ip = event['sourceIPAddress']
+        region = event['awsRegion']
 
         if 'errorCode' in event:
             error_code = event['errorCode']
@@ -32,12 +33,15 @@ def extract_key_events(events):
         elif event_name == 'StopInstances':
             instances = ', '.join([item['instanceId'] for item in event['requestParameters']['instancesSet']['items']])
             forced = event['requestParameters']['force']
-            description = f"Stopped EC2 instances" + f' (forced: {forced}) ' + f" : {instances}"
+            description = f"Stopped EC2 instances" + f' (forced: {forced}, region: {region}) ' + f" : {instances}"
+        elif event_name == 'StartInstances':
+            instances_set = ', '.join([item['instanceId'] for item in event['requestParameters']['instancesSet']['items']])
+            response_instances = ', '.join([item['instanceId'] + ' = code,previous_state: ' + str(item['previousState']['code']) + "," + item['previousState']['name'] + ' | code,current_state: ' + str(item['currentState']['code']) + "," + item['currentState']['name'] + '\n' \
+                for item in event['responseElements']['instancesSet']['items']])
+            description = f'Started EC2 instances = instances_set: {instances_set} | response_instances: {response_instances}'
         elif event_name == 'ExecuteStatement':
             description = "Database query executed"
-            region = event['awsRegion']
-
-            description = description + ' region: ' + region + ' sourceIP: ' + srcIP + '\n'
+            description = description + ' region: ' + region + ' sourceIP: ' + src_ip + '\n'
             description = description + '\t requestParameters: \n \t\t' + 'resourceArn: ' + event['requestParameters']['resourceArn'] + \
                 ' | database: ' + event['requestParameters']['database'] + ' | sql: ' + event['requestParameters']['sql']
         elif event_name == 'AdminSetUserPassword':
