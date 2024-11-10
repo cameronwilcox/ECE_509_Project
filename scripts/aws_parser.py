@@ -38,7 +38,7 @@ def extract_key_events(events):
             instances_set = ', '.join([item['instanceId'] for item in event['requestParameters']['instancesSet']['items']])
             response_instances = ', '.join([item['instanceId'] + ' = code,previous_state: ' + str(item['previousState']['code']) + "," + item['previousState']['name'] + ' | code,current_state: ' + str(item['currentState']['code']) + "," + item['currentState']['name'] + '\n' \
                 for item in event['responseElements']['instancesSet']['items']])
-            description = f'Started EC2 instances = instances_set: {instances_set} | response_instances: {response_instances}'
+            description = f'Started EC2 instances = instances_set: {instances_set} ---- response_instances: {response_instances}'
         elif event_name == 'ExecuteStatement':
             description = "Database query executed"
             description = description + ' region: ' + region + ' sourceIP: ' + src_ip + '\n'
