@@ -60,7 +60,7 @@ def write_out_timeline(key_events):
         file.write("Timeline of Key Events:\n")
         file.write('=' * 50)
         for event_time, description in key_events:
-            file.write(f"{event_time.strftime('%Y-%m-%d %H:%M:%S')} - {description}")
+            file.write(f"{event_time.strftime('%Y-%m-%d %H:%M:%S')} - {description}\n")
 
 def main(file_path):
     events = parse_cloudtrail_logs(file_path)
